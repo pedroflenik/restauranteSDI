@@ -7,12 +7,13 @@ import java.util.Scanner;
 import java.util.HashMap;
 import java.util.Collections;
 import java.util.Arrays;
+import java.util.Set;
 
 public class Mesa {
     public static void main(String[] args) {
 
-    Vector<Integer> comandas = new Vector<>();
-    HashMap<Integer,Vector<String>> pedidos = new HashMap<Integer,Vector<String>>();
+   
+    HashMap<Integer,Vector<String>> comandasEpedidos = new HashMap<Integer,Vector<String>>();
     Scanner sc = new Scanner(System.in);
     try {
         // Obtém uma referência para o registro do RMI
@@ -23,7 +24,7 @@ public class Mesa {
 
         // Chama o método do servidor e imprime a mensagem
         int opcao = -1;
-        while(opcao != 0){
+        while(opcao != 6){
             System.out.println("Escolha uma opção:");
             System.out.println("1 - Nova comanda");
             System.out.println("2 - Consultar cardápio");
@@ -31,6 +32,10 @@ public class Mesa {
             System.out.println("4 - Valor comanda");
             System.out.println("5 - Fechar comanda");
             System.out.println("6 - Sair");
+
+            opcao = sc.nextInt();
+            sc.nextLine();
+
             switch (opcao) {
                 case 1:
                 try{
@@ -39,7 +44,7 @@ public class Mesa {
                     System.out.println("Insira o número da mesa:");
                     int nMesa = sc.nextInt();
                     int nNovaComanda = stub.novaComanda(nome, nMesa);
-                    comandas.add(nNovaComanda);
+                    comandasEpedidos.put(nNovaComanda, new Vector<String>());
                 }catch(Exception ex){
                     System.out.println("ERRO: Falha na criacao de nova comanda");
                     ex.printStackTrace();
@@ -77,15 +82,16 @@ public class Mesa {
                     }while(codigo != 0);
                     System.out.println("Escolha uma dessas comandas para adicionar o pedido:");
                     System.out.println("[");
-                    for(int i : comandas){
+                  
+                    for(Integer i : comandasEpedidos.keySet()){
                         System.out.print(i + " ");
                     }
                     System.out.println("]");
                     int nComanda = sc.nextInt();
                     sc.nextLine();
-                    Vector<String> vec = pedidos.getOrDefault(nComanda, new Vector<>());
+                    Vector<String> vec = comandasEpedidos.getOrDefault(nComanda, new Vector<>());
                     vec.addAll(pedido);
-                    pedidos.put(nComanda, vec);
+                    comandasEpedidos.put(nComanda, vec);
                     stub.fazerPedido(nComanda, pedido.toArray(new String[pedido.size()]));
                     } catch (Exception ex) {
                         System.out.println("ERRO: Falha ao fazer novo pedido");
@@ -94,20 +100,16 @@ public class Mesa {
                 break;
                 case 4:
                  try {
-                        System.out.println("Escolha uma dessas comandas para vizualizar total pedido");
-                        System.out.println("[");
-                        for(int i : comandas){
-                            System.out.print(i + " ");
-                        }
-                        System.out.println("]");
-                        int nComanda = sc.nextInt();
-                        sc.nextLine();
-                        Vector<String> todosPedidosComanda = pedidos.get(nComanda);
-                        
-                        for(String s : todosPedidosComanda){
-                            System.out.println(s);
-                        } 
-                        
+                    System.out.println("Escolha uma dessas comandas para vizualizar total pedido");
+                    System.out.println("[");
+                    for(Integer i : comandasEpedidos.keySet()){
+                        System.out.print(i + " ");
+                    }
+                    System.out.println("]");
+                    int nComanda = sc.nextInt();
+                    sc.nextLine();
+                    float valor = stub.valorComanda(nComanda);
+                    System.out.println("Valor total comanda == " + valor);
                 } catch (Exception ex) {
                         System.out.println("ERRO: Pegar total pedido");
                         ex.printStackTrace();
@@ -116,21 +118,22 @@ public class Mesa {
                 case 5:
                     System.out.println("Escolha uma dessas comandas para pagar:");
                     System.out.println("[");
-                    for(int i : comandas){
+                    for(Integer i : comandasEpedidos.keySet()){
                         System.out.print(i + " ");
                     }
                     
                     System.out.println("]");
                     int nComanda = sc.nextInt();
-                    //TODO: Remover comandas de 'comandas' e 'pedidos'
+                    comandasEpedidos.remove(nComanda);
+                    stub.fecharComanda(nComanda);
                     
                 break;
                 case 6:
-                System.out.println("Saindo.....");
-                sc.close();
+                    System.out.println("Saindo.....");
+                    sc.close();
                 break;
                 default:
-                System.out.println("Opção inválida");
+                    System.out.println("Opção inválida");
                     break;
             }
         }

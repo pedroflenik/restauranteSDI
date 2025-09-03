@@ -10,25 +10,27 @@ import javax.print.DocFlavor.STRING;
 import java.rmi.registry.*;
 import java.util.Vector;
 import java.util.Collections;
+import java.util.HashMap;
 
 public class Administracao implements Restaurante{
 
     static Vector<String> cardapio = new Vector<String>(); 
-    Vector<Integer> comandas = new Vector<Integer>();
-    Vector<Vector<String>> pedidos = new Vector<Vector<String>>();
+    HashMap<Integer,Vector<String>> comandasEpedidos = new HashMap<Integer,Vector<String>>();
+    HashMap<Integer,Integer> comandasEmesas = new HashMap<Integer,Integer>();
     
     public Administracao(){};
 
     /* Retorna o número da nova comanda pra um novo cliente (String nome)*/
     public int novaComanda(String nome, int mesa) throws RemoteException{
-        int nNovaComanda = 0;
-        if (comandas.size() == 0) {
+          int nNovaComanda;
+
+        if (comandasEpedidos.isEmpty()) {
             nNovaComanda = 1;
-            comandas.add(nNovaComanda);
-        }else{
-            nNovaComanda = Collections.max(comandas) + 1;
-            comandas.add(nNovaComanda);
+        } else {
+            nNovaComanda = Collections.max(comandasEpedidos.keySet()) + 1;
         }
+        comandasEpedidos.put(nNovaComanda,new Vector<String>());
+        comandasEmesas.put(nNovaComanda,mesa);
         return nNovaComanda;
     }
 
@@ -40,17 +42,38 @@ public class Administracao implements Restaurante{
     }
 
     public String fazerPedido(int comanda,String[] pedido) throws RemoteException{
-        return "a";
+        Vector<String> novoPedido = new Vector<String>();
+        for(String a : pedido){
+            novoPedido.add(a);
+        }
+        comandasEpedidos.get(comanda).addAll(novoPedido);
+        return "Pedido feito com sucesso";
     }
 
     /*Solicita o valor total para o pagamento */
-    public float valorComanda(int comanda) throws RemoteException{
-        return 0;
+
+    public float valorComanda(int comanda) throws RemoteException {
+        Vector<String> pedidos = comandasEpedidos.get(comanda);
+        float valorTotal = 0.0f;
+
+        if (pedidos != null) {
+            for (String pedido : pedidos) {
+                String[] parts = pedido.split(",");
+                if (parts.length >= 3) {
+                    float preco = Float.parseFloat(parts[2]);
+                    valorTotal += preco;
+                }
+            }
+        }
+
+        return valorTotal;
     }
 
     /*Realiza o pagamento e libera*/
     public boolean fecharComanda(int comanda) throws RemoteException{
-        return false;
+        comandasEpedidos.remove(comanda);
+        comandasEmesas.remove(comanda);
+        return true;
     }
 
 
