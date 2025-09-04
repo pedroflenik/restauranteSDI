@@ -121,7 +121,7 @@ public class Mesa {
                     for(Integer i : comandasEpedidos.keySet()){
                         System.out.print(i + " ");
                     }
-                    
+
                     System.out.println("]");
                     int nComanda = sc.nextInt();
                     comandasEpedidos.remove(nComanda);
