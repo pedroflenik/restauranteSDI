@@ -15,9 +15,10 @@ import java.util.HashMap;
 public class Administracao implements Restaurante{
 
     static Vector<String> cardapio = new Vector<String>(); 
-    HashMap<Integer,Vector<String>> comandasEpedidos = new HashMap<Integer,Vector<String>>();
-    HashMap<Integer,Integer> comandasEmesas = new HashMap<Integer,Integer>();
-    
+    static HashMap<Integer,Vector<String>> comandasEpedidos = new HashMap<Integer,Vector<String>>();
+    static HashMap<Integer,Integer> comandasEmesas = new HashMap<Integer,Integer>();
+    static Vector<Integer> preparos = new Vector<Integer>();
+
     public Administracao(){};
 
     /* Retorna o número da nova comanda pra um novo cliente (String nome)*/
@@ -91,7 +92,7 @@ public class Administracao implements Restaurante{
             System.out.println("ERRO: Erro na leitura do arquivo csv");
             e.printStackTrace();
         }
-
+        Scanner sc = new Scanner(System.in);
         // for(String a : cardapio){
         //     System.out.println(a);
         // }
@@ -109,7 +110,7 @@ public class Administracao implements Restaurante{
             ex.printStackTrace();
         }
         try{
-            Registry registry = LocateRegistry.getRegistry("localhost",8888);
+            Registry registry = LocateRegistry.getRegistry("localhost",8889);
 
         
             Cozinha stub= (Cozinha) registry.lookup("cozinha");
@@ -120,11 +121,82 @@ public class Administracao implements Restaurante{
                 System.out.println("2 - Tempo preparo");
                 System.out.println("3 - Pegar preparo");
                 System.out.println("4 - Sair");
+            
+                opcao = sc.nextInt();
+                sc.nextLine();
+            switch (opcao) {
+                case 1:
+                    try {
+                         System.out.println("Escolha uma dessas comandas para pagar:");
+                        System.out.println("[");
+                        for(Integer i : comandasEpedidos.keySet()){
+                            System.out.print(i + " ");
+                        }
+                        System.out.println("\n]");
+                        int nComanda = sc.nextInt();
+                        sc.nextLine();
+                        int t = stub.novoPreparo(nComanda, comandasEpedidos.get(nComanda).toArray(new String[comandasEpedidos.size()]));
+                        preparos.add(t);
+                    } catch (Exception ex) {
+                        System.out.println("ERRO: Falha na criação de novo preparo");
+                        ex.printStackTrace();
+                    }
+                break;
+                case 2:
+                    try{
+                        System.out.println("Escolha um dos preparos:\n[");
+                        for(int p : preparos){
+                            System.out.print(p);
+                        }
+                        int nPreparo = sc.nextInt();
+                        sc.nextLine();
+                        System.out.println("\n]");
+                        int tempo = stub.tempoPreparo(nPreparo);
+                        System.out.println("Tempo: " + tempo);
+                    }catch(Exception ex){
+                        System.out.println("ERRO: Falha no tempo preparo");
+                    }
+                break;
+                case 3:
+                    try {
+                        System.out.println("Escolha um dos preparos:\n[");
+                        for (int p : preparos) {
+                            System.out.print(p + " ");
+                        }
+                        System.out.println("\n]");
+                        int nPreparo = sc.nextInt();
+                        sc.nextLine();
+
+                        String[] pedido = stub.pegarPreparo(nPreparo);
+
+                        if (pedido.length == 0) {
+                            System.out.println("O preparo ainda não está pronto.");
+                        } else {
+                            System.out.println("Preparo pronto! Pedido:");
+                            for (String item : pedido) {
+                                System.out.println("- " + item);
+                            }
+                            preparos.remove(Integer.valueOf(nPreparo));
+                        }
+                    } catch (Exception ex) {
+                        System.out.println("ERRO: Falha ao pegar preparo");
+                        ex.printStackTrace();
+                    }
+                    break;
+                case 4:
+                System.out.println("Saindo....");
+                break;
+                default:
+                    System.out.println("Opção inválida");
+                break;
             }
+            }
+
         }catch(Exception ex){
             System.out.println("ERRO: Erro cliente administracao");
             ex.printStackTrace();
         }
+        sc.close();
     }
 
 }

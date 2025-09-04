@@ -38,9 +38,9 @@ public class Preparo implements Cozinha {
      * Tempo: random, entre 1 e 10 segundos.
      */
     public int tempoPreparo(int preparo) throws RemoteException {
-        int tempo = (int)(Math.random() * 10) + 1; // random seconds (1–10)
-        long prontoEm = System.currentTimeMillis() + tempo * 1000; // ready time
-        preparoEtimestamp.put(preparo, prontoEm); // store for this specific preparo
+        int tempo = (int)(Math.random() * 10) + 1; 
+        long prontoEm = System.currentTimeMillis() + tempo * 1000; 
+        preparoEtimestamp.put(preparo, prontoEm); 
         return tempo;
     }
     /*Busca o pedido preparado para entrega.
@@ -68,18 +68,17 @@ public class Preparo implements Cozinha {
             preparoEcomanda.remove(preparo);
 
             return resultado;
-        } else {
-            // Not ready yet
+        }else {
             return new String[0];
         }
     }
 
-    static void main(String[] args){
+    public static void main(String[] args){
         try{
         Preparo server = new Preparo();
         Cozinha stub = (Cozinha) UnicastRemoteObject.exportObject(server, 0);
         // Registra a stub no RMI Registry para que ela seja obtAida pelos clientes
-        Registry registry = LocateRegistry.createRegistry(8888);
+        Registry registry = LocateRegistry.createRegistry(8889);
         //Registry registry = LocateRegistry.getRegistry(9999);
         registry.bind("cozinha", stub);
         System.out.println("Servidor pronto");
