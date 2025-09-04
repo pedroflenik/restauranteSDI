@@ -17,7 +17,8 @@ JFLAGS = -g
 CLASSES = \
     Administracao.java \
     Restaurante.java \
-	Mesa.java
+	Mesa.java \
+	Preparo.java
 
 # Default target
 default: classes
