@@ -15,7 +15,8 @@ CLASSES = \
     Administracao.java \
     Restaurante.java \
 	Mesa.java \
-	Preparo.java
+	Preparo.java \
+	wsRestaurante.java
 
 default: classes
 

@@ -115,12 +115,13 @@ public class Administracao implements Restaurante{
         
             Cozinha stub= (Cozinha) registry.lookup("cozinha");
             int opcao = -1;
-            while(opcao != 4){
+            while(opcao != 5){
                 System.out.println("Escolha uma opção:");
                 System.out.println("1 - Novo Preparo");
                 System.out.println("2 - Tempo preparo");
                 System.out.println("3 - Pegar preparo");
-                System.out.println("4 - Sair");
+                System.out.println("4 - Compras Mercado");
+                System.out.println("5 - Sair");
             
                 opcao = sc.nextInt();
                 sc.nextLine();
@@ -184,6 +185,9 @@ public class Administracao implements Restaurante{
                     }
                     break;
                 case 4:
+                    wsClientMercado.menu();
+                break;
+                case 5:
                 System.out.println("Saindo....");
                 break;
                 default:
