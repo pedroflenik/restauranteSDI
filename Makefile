@@ -1,5 +1,5 @@
-# GNU Makefile
 
+# GNU Makefile
 
 JAR = /usr/bin/jar
 JAVA = /usr/bin/java
@@ -8,19 +8,33 @@ JAVAC = /usr/bin/javac
 JFLAGS = -g
 
 .SUFFIXES: .java .class
-.java.class:
+
+# Rule to compile Java files in root folder
+%.class: %.java
 	$(JAVAC) $(JFLAGS) $<
 
-CLASSES = \
-    Administracao.java \
-    Restaurante.java \
+# Rule to compile Java files inside wsMercado package
+wsMercado/%.class: wsMercado/%.java
+	$(JAVAC) $(JFLAGS) $<
+
+# List Java source files in root folder
+ROOT_CLASSES = \
+	Administracao.java \
+	Restaurante.java \
 	Mesa.java \
-	Preparo.java \
-	wsRestaurante.java
+	Preparo.java
+
+# Java source file inside wsMercado package
+PKG_CLASSES = \
+	wsMercado/wsClientMercado.java
+
+# Targets for class files in root and package folders
+ROOT_CLASSFILES = $(ROOT_CLASSES:.java=.class)
+PKG_CLASSFILES = $(PKG_CLASSES:.java=.class)
 
 default: classes
 
-classes: $(CLASSES:.java=.class)
+classes: $(ROOT_CLASSFILES) $(PKG_CLASSFILES)
 
 clean:
-	rm -f *.class
+	rm -f *.class wsMercado/*.class

@@ -7,6 +7,8 @@ import java.util.Vector;
 
 import javax.print.DocFlavor.STRING;
 
+import wsMercado.wsClientMercado;
+
 import java.rmi.registry.*;
 import java.util.Vector;
 import java.util.Collections;
